@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>b5f0c0ab-418b-4d02-b193-c7889874740f</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Sermon Check</ProviderName>
+  <DefaultLocale>es-ES</DefaultLocale>
+  <DisplayName DefaultValue="Sermon Check"/>
+  <Description DefaultValue="Calcula cuánto dura el sermón y coloca etiquetas de tiempo en el documento."/>
+  <IconUrl DefaultValue="https://lfsantana.github.io/sermon-check-word/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://lfsantana.github.io/sermon-check-word/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://github.com/lfsantana/sermon-check-word"/>
+  <AppDomains>
+    <AppDomain>https://lfsantana.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="WordApi" MinVersion="1.3"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://lfsantana.github.io/sermon-check-word/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="SermonCheck.Group">
+                <Label resid="SermonCheck.GroupLabel"/>
+                <Icon>
+                  <bt:Image size="16" resid="SermonCheck.Icon16"/>
+                  <bt:Image size="32" resid="SermonCheck.Icon32"/>
+                  <bt:Image size="80" resid="SermonCheck.Icon80"/>
+                </Icon>
+                <Control xsi:type="Button" id="SermonCheck.OpenPane">
+                  <Label resid="SermonCheck.ButtonLabel"/>
+                  <Supertip>
+                    <Title resid="SermonCheck.ButtonLabel"/>
+                    <Description resid="SermonCheck.ButtonTip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="SermonCheck.Icon16"/>
+                    <bt:Image size="32" resid="SermonCheck.Icon32"/>
+                    <bt:Image size="80" resid="SermonCheck.Icon80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>SermonCheck.Pane</TaskpaneId>
+                    <SourceLocation resid="SermonCheck.PaneUrl"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="SermonCheck.Icon16" DefaultValue="https://lfsantana.github.io/sermon-check-word/assets/icon-16.png"/>
+        <bt:Image id="SermonCheck.Icon32" DefaultValue="https://lfsantana.github.io/sermon-check-word/assets/icon-32.png"/>
+        <bt:Image id="SermonCheck.Icon80" DefaultValue="https://lfsantana.github.io/sermon-check-word/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="SermonCheck.PaneUrl" DefaultValue="https://lfsantana.github.io/sermon-check-word/taskpane.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="SermonCheck.GroupLabel" DefaultValue="Sermon Check"/>
+        <bt:String id="SermonCheck.ButtonLabel" DefaultValue="Sermon Check"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="SermonCheck.ButtonTip" DefaultValue="Abre el panel para ver la duración del sermón y colocar etiquetas de tiempo."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

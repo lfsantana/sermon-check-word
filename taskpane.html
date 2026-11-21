@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sermon Check</title>
+  <link rel="stylesheet" href="taskpane.css">
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+</head>
+<body>
+  <div class="notice" id="notice" role="status" hidden>
+    <span id="noticeText"></span>
+    <button type="button" class="notice-x" id="noticeClose" aria-label="Cerrar aviso">×</button>
+  </div>
+
+  <main id="app" hidden>
+    <section class="summary" aria-label="Resumen">
+      <div class="total"><span id="statTotal">0:00</span><small>duración estimada</small></div>
+      <div class="stats">
+        <div><b id="statWords">0</b> palabras</div>
+        <div><b id="statInDoc">0</b> <span id="statInDocLabel">etiquetas en el documento</span></div>
+      </div>
+      <button type="button" class="icon-btn" id="btnRefresh" title="Volver a leer el documento" aria-label="Volver a leer el documento">↻</button>
+    </section>
+
+    <section class="actions" aria-label="Acciones">
+      <button type="button" class="btn primary" id="btnPlace">Colocar etiquetas</button>
+      <div class="actions-row">
+        <button type="button" class="btn" id="btnCursor" title="Añade una etiqueta después del párrafo donde está el cursor">Etiqueta en el cursor</button>
+        <button type="button" class="btn" id="btnRehearse">Modo ensayo</button>
+      </div>
+      <div class="actions-row">
+        <button type="button" class="btn ghost" id="btnRecalc" title="Deja cada etiqueta donde está y corrige su tiempo">Actualizar tiempos</button>
+        <button type="button" class="btn ghost" id="btnRemove">Quitar etiquetas</button>
+      </div>
+      <p class="hint" id="planHint"></p>
+    </section>
+
+    <details class="panel" open>
+      <summary>Ritmo</summary>
+      <div class="field">
+        <label for="wpm">Palabras por minuto</label>
+        <div class="row">
+          <input type="number" id="wpm" data-setting="wpm" min="40" max="300" step="1" inputmode="numeric">
+          <div class="seg" role="group" aria-label="Preajustes de ritmo">
+            <button type="button" data-wpm="100">Lento</button>
+            <button type="button" data-wpm="120">Normal</button>
+            <button type="button" data-wpm="140">Rápido</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="quoteWpm">Ritmo al leer citas bíblicas</label>
+        <div class="row"><input type="number" id="quoteWpm" data-setting="quoteWpm" min="40" max="300" step="1" inputmode="numeric"><span class="unit">palabras/min</span></div>
+      </div>
+      <div class="field two">
+        <div>
+          <label for="headingPause">Pausa por título</label>
+          <div class="row"><input type="number" id="headingPause" data-setting="headingPause" min="0" max="120" step="1" inputmode="numeric"><span class="unit">s</span></div>
+        </div>
+        <div>
+          <label for="margin">Margen para improvisar</label>
+          <div class="row"><input type="number" id="margin" data-setting="margin" min="0" max="100" step="1" inputmode="numeric"><span class="unit">%</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="panel" open>
+      <summary>Etiquetas de tiempo</summary>
+      <div class="rule">
+        <input type="checkbox" id="useEveryMin" data-setting="useEveryMin">
+        <label for="useEveryMin">Cada</label>
+        <input type="number" class="sm" data-setting="everyMin" min="0.5" max="120" step="0.5" aria-label="Minutos entre etiquetas">
+        <span class="unit">minutos</span>
+      </div>
+      <div class="rule">
+        <input type="checkbox" id="useEveryWords" data-setting="useEveryWords">
+        <label for="useEveryWords">Cada</label>
+        <input type="number" class="sm" data-setting="everyWords" min="50" max="20000" step="50" aria-label="Palabras entre etiquetas">
+        <span class="unit">palabras</span>
+      </div>
+      <div class="rule">
+        <input type="checkbox" id="useEndOfLevel" data-setting="useEndOfLevel">
+        <label for="useEndOfLevel">Al finalizar cada</label>
+        <select data-setting="endOfLevel" aria-label="Nivel de punto">
+          <option value="1">punto principal</option>
+          <option value="2">subpunto</option>
+          <option value="3">sub-subpunto</option>
+        </select>
+      </div>
+      <div class="rule wrap">
+        <input type="checkbox" id="usePercents" data-setting="usePercents">
+        <label for="usePercents">Al avanzar</label>
+        <span class="chips" id="percents">
+          <label><input type="checkbox" value="25">25 %</label>
+          <label><input type="checkbox" value="50">mitad</label>
+          <label><input type="checkbox" value="75">75 %</label>
+        </span>
+      </div>
+      <div class="rule wrap">
+        <input type="checkbox" id="useAtMinutes" data-setting="useAtMinutes">
+        <label for="useAtMinutes">En estos minutos</label>
+        <input type="text" class="wide" data-setting="atMinutes" placeholder="10, 15, 20, 30" aria-label="Minutos específicos separados por comas">
+      </div>
+      <div class="field">
+        <span class="label">Formato</span>
+        <div class="seg" role="group" aria-label="Formato de etiqueta">
+          <button type="button" data-format="min">[10 MIN]</button>
+          <button type="button" data-format="clock">[10:30]</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="panel" open>
+      <summary>Tiempo por punto</summary>
+      <label class="check"><input type="checkbox" id="showSub"> Mostrar subpuntos</label>
+      <ol class="list" id="sections"></ol>
+    </details>
+
+    <details class="panel">
+      <summary>Dónde irán las etiquetas <span class="count" id="plannedCount"></span></summary>
+      <ol class="list" id="planned"></ol>
+    </details>
+  </main>
+
+  <div class="outside" id="outside" hidden>
+    <h1>Sermon Check para Word</h1>
+    <p>Este panel funciona dentro de Microsoft Word. Ábrelo desde la pestaña <b>Inicio</b> → <b>Sermon Check</b>.</p>
+  </div>
+
+  <script type="module" src="js/taskpane.js"></script>
+</body>
+</html>
