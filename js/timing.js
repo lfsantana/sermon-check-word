@@ -11,6 +11,8 @@ export const DEFAULTS = Object.freeze({
   usePercents: false, percents: [50],
   useAtMinutes: false, atMinutes: [],
   format: 'min',     // 'min' → [10 MIN], 'clock' → [10:30]
+  countdown: false,  // true → las etiquetas dicen cuánto queda: [QUEDAN 10 MIN]
+  countdownFrom: 0,  // minutos disponibles; 0 → la duración estimada
 });
 
 const num = (v, fallback, { zeroOk = false } = {}) => {
@@ -48,6 +50,8 @@ export function sanitize(input = {}) {
     useAtMinutes: !!s.useAtMinutes,
     atMinutes: numList(s.atMinutes),
     format: s.format === 'clock' ? 'clock' : 'min',
+    countdown: !!s.countdown,
+    countdownFrom: num(s.countdownFrom, 0),
   };
 }
 
@@ -167,6 +171,31 @@ export const realLabel = (seconds, format) =>
     ? formatLabel(seconds, 'clock')
     : formatLabel(Math.max(1, Math.round(seconds / 60)) * 60, 'min');
 
+// Texto de cualquier etiqueta: reconoce las de tiempo transcurrido y las de cuenta regresiva.
+export const MARKER = /^\[(?:QUEDAN?\s+|\+\s?)?\d+(?::\d\d\s*(?:MIN)?|\s*MIN)\]$/i;
+
+// Segundos desde los que se cuenta hacia atrás.
+export const countdownBase = (settings, total) =>
+  (settings.countdownFrom > 0 ? settings.countdownFrom * 60 : total);
+
+// [QUEDAN 10 MIN] / [QUEDA 1 MIN] / [QUEDAN 2:30]; pasado el tiempo disponible, [+2 MIN].
+export function remainingLabel(remaining, format) {
+  if (remaining < 0) return `[+${formatLabel(-remaining, format).slice(1)}`;
+  const inner = formatLabel(remaining, format).slice(1);
+  return `[${inner === '1 MIN]' ? 'QUEDA' : 'QUEDAN'} ${inner}`;
+}
+
+const wholeMinutes = (seconds) => Math.max(1, Math.round(seconds / 60)) * 60;
+
+// Etiqueta para un punto del discurso, según los ajustes (transcurrido o cuenta regresiva).
+export function labelFor(elapsed, settingsIn, total) {
+  const s = sanitize(settingsIn);
+  if (!s.countdown) return realLabel(elapsed, s.format);
+  const remaining = countdownBase(s, total) - elapsed;
+  if (s.format === 'clock') return remainingLabel(Math.round(remaining), 'clock');
+  return remainingLabel(Math.sign(remaining || 1) * wholeMinutes(Math.abs(remaining)), 'min');
+}
+
 const PRIORITY = { at: 0, every: 1, percent: 2, section: 3, words: 4, manual: 5 };
 
 export function placeMarkers(tl, settingsIn, manual = []) {
@@ -191,22 +220,29 @@ export function placeMarkers(tl, settingsIn, manual = []) {
     }
     return best && { b: best, dist: bestDist };
   };
-  const timeTarget = (T, source, shown = T) => {
+  const base = countdownBase(s, tl.total);
+  const real = (elapsed) => labelFor(elapsed, s, tl.total);
+  // `mark` es el valor redondo que se muestra: minutos transcurridos o, en cuenta regresiva, restantes.
+  const timeTarget = (T, source, text) => {
     if (!(T > 0) || T >= tl.total) return;
     const hit = nearest(T, 'end');
-    if (hit) offer(hit.b, { source, dist: hit.dist, text: formatLabel(shown, s.format) });
+    if (hit) offer(hit.b, { source, dist: hit.dist, text });
   };
+  const roundTarget = (mark, source) => (s.countdown
+    ? timeTarget(base - mark, source, remainingLabel(mark, s.format))
+    : timeTarget(mark, source, formatLabel(mark, s.format)));
 
   if (valid.length) {
-    if (s.useAtMinutes) for (const m of s.atMinutes) timeTarget(m * 60, 'at');
+    if (s.useAtMinutes) for (const m of s.atMinutes) roundTarget(m * 60, 'at');
     if (s.useEveryMin) {
       const step = s.everyMin * 60;
-      for (let T = step, n = 0; T < tl.total && n < 2000; T += step, n++) timeTarget(T, 'every');
+      const limit = s.countdown ? base : tl.total;
+      for (let mark = step, n = 0; mark < limit && n < 2000; mark += step, n++) roundTarget(mark, 'every');
     }
     if (s.usePercents) {
       for (const p of s.percents) {
         const T = (tl.total * p) / 100;
-        timeTarget(T, 'percent', s.format === 'clock' ? T : Math.max(1, Math.round(T / 60)) * 60);
+        timeTarget(T, 'percent', real(T));
       }
     }
     if (s.useEndOfLevel) {
@@ -217,13 +253,13 @@ export function placeMarkers(tl, settingsIn, manual = []) {
         let hit = null;
         for (const b of valid) if (b.end <= h.start + 1e-9) hit = b;
         // un «punto» de menos de medio minuto (p. ej. el título del sermón) no merece etiqueta
-        if (hit && hit.end >= 30) offer(hit, { source: 'section', dist: 0, text: realLabel(hit.end, s.format) });
+        if (hit && hit.end >= 30) offer(hit, { source: 'section', dist: 0, text: real(hit.end) });
       });
     }
     if (s.useEveryWords) {
       for (let W = s.everyWords, n = 0; W < tl.words && n < 2000; W += s.everyWords, n++) {
         const hit = nearest(W, 'wordsEnd');
-        if (hit) offer(hit.b, { source: 'words', dist: hit.dist, text: realLabel(hit.b.end, s.format) });
+        if (hit) offer(hit.b, { source: 'words', dist: hit.dist, text: real(hit.b.end) });
       }
     }
   }
@@ -232,7 +268,7 @@ export function placeMarkers(tl, settingsIn, manual = []) {
     if (m.off) { chosen.delete(m.after); continue; }
     const b = all.find((x) => x.after === m.after);
     if (b && !chosen.has(b.after)) {
-      chosen.set(b.after, { after: b.after, seconds: b.end, source: 'manual', dist: 0, text: realLabel(b.end, s.format) });
+      chosen.set(b.after, { after: b.after, seconds: b.end, source: 'manual', dist: 0, text: real(b.end) });
     }
   }
   // «off» gana siempre, aunque esté antes en la lista

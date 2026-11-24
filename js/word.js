@@ -1,8 +1,8 @@
 // Lectura y escritura del documento abierto en Word (Office.js).
 // Las funciones de la primera mitad son puras y se prueban con Node.
-import { sanitize, classify, timeline, placeMarkers, realLabel } from './timing.js';
+import { sanitize, classify, timeline, placeMarkers, labelFor, MARKER } from './timing.js';
 
-export const MARKER = /^\[\d+(?::\d\d\s*(?:MIN)?|\s*MIN)\]$/i;
+export { MARKER };
 const QUOTE_STYLE = /cita|quote/i;
 const VERSE = /^\d{1,3}\s*\p{Lu}/u;
 
@@ -73,10 +73,10 @@ export function existingAsMarkers(tl) {
 }
 
 // Texto que debería tener cada etiqueta existente según el tiempo real en ese punto.
-export function recalculated(tl, format) {
+export function recalculated(tl, settings) {
   return tl.blocks
     .filter((b) => b.kind === 'marker')
-    .map((b) => ({ i: b.i, old: b.text, text: realLabel(b.start, format) }))
+    .map((b) => ({ i: b.i, old: b.text, text: labelFor(b.start, settings, tl.total) }))
     .filter((m) => m.text !== m.old);
 }
 
@@ -150,7 +150,7 @@ export async function refreshLabels(settings) {
   return Word.run(async (context) => {
     const items = await loadParagraphs(context);
     const a = analyze(items, settings);
-    const changes = recalculated(a.tl, a.settings.format);
+    const changes = recalculated(a.tl, a.settings);
     for (const c of changes) items[a.anchors[c.i].p].insertText(c.text, 'Replace');
     await context.sync();
     return { changed: changes.length, total: a.existing.length };
@@ -173,7 +173,7 @@ export async function labelAtCursor(settings) {
     if (!(block.end > 0)) return { text: null };
     const next = a.tl.blocks[i + 1];
     if (next?.kind === 'marker') return { text: null, already: next.text };
-    const text = realLabel(block.end, a.settings.format);
+    const text = labelFor(block.end, a.settings, a.tl.total);
     insertLabel(items, a.anchors[i], text);
     await context.sync();
     return { text };

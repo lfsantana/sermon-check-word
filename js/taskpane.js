@@ -163,17 +163,26 @@ $('btnCursor').addEventListener('click', () => act(
 ));
 
 // ---------- ajustes ----------
+// Cómo se muestra un ajuste en su casilla (0 en «tiempo disponible» significa automático).
+const shown = (key, v) => (Array.isArray(v) ? v.join(', ') : key === 'countdownFrom' && !Number(v) ? '' : v);
+
 function syncInputs() {
   const s = state.settings;
   document.querySelectorAll('[data-setting]').forEach((input) => {
     const v = s[input.dataset.setting];
     if (input.type === 'checkbox') input.checked = !!v;
-    else if (document.activeElement !== input) input.value = Array.isArray(v) ? v.join(', ') : v;
+    else if (document.activeElement !== input) input.value = shown(input.dataset.setting, v);
   });
   const clean = sanitize(s);
   document.querySelectorAll('#percents input').forEach((input) => { input.checked = clean.percents.includes(Number(input.value)); });
   document.querySelectorAll('[data-wpm]').forEach((b) => b.setAttribute('aria-pressed', String(Number(s.wpm) === Number(b.dataset.wpm))));
   document.querySelectorAll('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(clean.format === b.dataset.format)));
+  const down = clean.countdown;
+  document.querySelectorAll('[data-countdown]').forEach((b) => b.setAttribute('aria-pressed', String(down === (b.dataset.countdown === '1'))));
+  document.querySelector('[data-format="min"]').textContent = down ? '[QUEDAN 10 MIN]' : '[10 MIN]';
+  document.querySelector('[data-format="clock"]').textContent = down ? '[QUEDAN 10:30]' : '[10:30]';
+  document.querySelector('label[for="useAtMinutes"]').textContent = down ? 'Cuando queden (min)' : 'En estos minutos';
+  $('countdownField').hidden = !down;
   document.querySelectorAll('.rule').forEach((rule) => {
     const box = rule.querySelector('input[type="checkbox"][data-setting]');
     rule.classList.toggle('offed', !!box && !box.checked);
@@ -200,7 +209,7 @@ document.querySelectorAll('[data-setting]').forEach((input) => {
   if (input.type !== 'checkbox') {
     input.addEventListener('blur', () => {
       const clean = sanitize(state.settings)[input.dataset.setting];
-      input.value = Array.isArray(clean) ? clean.join(', ') : clean;
+      input.value = shown(input.dataset.setting, clean);
     });
   }
 });
@@ -211,6 +220,7 @@ $('percents').addEventListener('change', () => {
 });
 document.querySelectorAll('[data-wpm]').forEach((b) => b.addEventListener('click', () => setSetting('wpm', Number(b.dataset.wpm))));
 document.querySelectorAll('[data-format]').forEach((b) => b.addEventListener('click', () => setSetting('format', b.dataset.format)));
+document.querySelectorAll('[data-countdown]').forEach((b) => b.addEventListener('click', () => setSetting('countdown', b.dataset.countdown === '1')));
 $('showSub').addEventListener('change', render);
 
 // ---------- ensayo ----------

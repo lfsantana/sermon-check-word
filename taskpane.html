@@ -109,6 +109,17 @@
           <button type="button" data-format="clock">[10:30]</button>
         </div>
       </div>
+      <div class="field">
+        <span class="label">Las etiquetas muestran</span>
+        <div class="seg" role="group" aria-label="Qué muestran las etiquetas">
+          <button type="button" data-countdown="0">Tiempo transcurrido</button>
+          <button type="button" data-countdown="1">Cuenta regresiva</button>
+        </div>
+      </div>
+      <div class="field" id="countdownField" hidden>
+        <label for="countdownFrom">Tiempo disponible</label>
+        <div class="row"><input type="number" id="countdownFrom" data-setting="countdownFrom" min="0" max="600" step="1" inputmode="numeric" placeholder="auto"><span class="unit">min · vacío = duración estimada</span></div>
+      </div>
     </details>
 
     <details class="panel" open>
@@ -121,6 +132,7 @@
       <summary>Dónde irán las etiquetas <span class="count" id="plannedCount"></span></summary>
       <ol class="list" id="planned"></ol>
     </details>
+    <p class="share">¿Te sirve? <a href="https://lfsantana.github.io/sermon-check-word/" target="_blank" rel="noopener">Comparte Sermon Check</a> con otros predicadores.</p>
   </main>
 
   <div class="outside" id="outside" hidden>

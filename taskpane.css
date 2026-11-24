@@ -108,3 +108,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 
 .outside { padding: 28px 18px; color: var(--ink-2); }
 .outside h1 { color: var(--ink); }
+
+.share { padding: 14px; margin: 0; color: var(--ink-2); font-size: 12.5px; }
+.share a { color: var(--accent); }
+.seg { flex-wrap: wrap; }

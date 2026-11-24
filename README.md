@@ -7,6 +7,9 @@ del propio documento.
 El texto del documento no sale de Word: todo el cálculo se hace en el panel. Esta página
 solo sirve los archivos del panel.
 
+Página para compartir, con instrucciones para Windows, Mac y Word en el navegador:
+<https://lfsantana.github.io/sermon-check-word/>
+
 ## Instalar (Windows, Word de escritorio)
 
 1. Descarga `manifest.xml` e `Instalar en Word.bat` en la misma carpeta.
@@ -22,7 +25,8 @@ Para quitarlo, ejecuta `Quitar de Word.bat`.
 - **Ritmo** configurable: palabras por minuto, ritmo para citas bíblicas, pausa por título
   y margen para improvisar.
 - **Etiquetas**: cada X minutos, cada X palabras, al final de cada punto, al 25 %, la mitad
-  o el 75 %, o en minutos concretos. También una etiqueta donde está el cursor.
+  o el 75 %, o en minutos concretos, en tiempo transcurrido o en cuenta regresiva
+  (`[QUEDAN 10 MIN]`). También una etiqueta donde está el cursor.
 - **Actualizar tiempos**: deja cada etiqueta en su sitio y corrige el minuto tras editar el texto.
 - **Modo ensayo**: cronómetro con el texto en grande y aviso de adelanto o atraso.
 

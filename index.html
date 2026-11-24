@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sermon Check para Word</title>
+  <meta name="description" content="Complemento gratuito para Microsoft Word que calcula cuánto dura un sermón o discurso y coloca etiquetas de tiempo en el documento.">
+  <link rel="icon" href="assets/icon-32.png">
+  <style>
+    :root {
+      --bg: #f3efe7; --paper: #ffffff; --ink: #211e1a; --ink-2: #5f584e; --line: #ddd6c8; --accent: #a60000;
+      --sans: "Source Sans Pro", "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); }
+    main { max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+    h1 { font-family: var(--serif); font-size: 40px; line-height: 1.1; margin: 0 0 12px; text-wrap: balance; }
+    h2 { font-family: var(--serif); font-size: 24px; margin: 44px 0 10px; }
+    h3 { font-size: 17px; margin: 0; }
+    p { margin: 0 0 14px; }
+    .lead { font-size: 19px; color: var(--ink-2); max-width: 56ch; }
+    .tag { color: var(--accent); font-weight: 700; }
+    .btn {
+      display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600;
+      padding: 12px 22px; border-radius: 6px; margin: 10px 0 6px;
+    }
+    .btn:hover { background: #8a0000; }
+    .small { font-size: 14.5px; color: var(--ink-2); }
+    ul, ol { padding-left: 22px; margin: 0 0 14px; }
+    li { margin-bottom: 6px; }
+    details { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 0 18px; margin-bottom: 10px; }
+    summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
+    details[open] { padding-bottom: 8px; }
+    code { background: #ebe6da; padding: 1px 5px; border-radius: 4px; font-size: 0.9em; overflow-wrap: anywhere; }
+    a { color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Sermon Check para Word</h1>
+    <p class="lead">Un panel dentro de Microsoft Word que te dice cuánto dura tu sermón o discurso y coloca etiquetas de tiempo como <span class="tag">[10 MIN]</span> o <span class="tag">[QUEDAN 10 MIN]</span> en el propio documento.</p>
+
+    <h2>Qué hace</h2>
+    <ul>
+      <li>Calcula la duración según tu ritmo de palabras por minuto, con un ritmo aparte para las citas bíblicas.</li>
+      <li>Muestra cuánto dura cada punto, a partir de los títulos del documento.</li>
+      <li>Coloca etiquetas cada cierto tiempo, al final de cada punto, a la mitad o en los minutos que elijas, en tiempo transcurrido o en cuenta regresiva.</li>
+      <li>Incluye un modo ensayo con cronómetro que avisa si vas adelantado o atrasado.</li>
+    </ul>
+    <p>El texto de tu documento no sale de Word: todo el cálculo ocurre en el panel.</p>
+
+    <h2>Instalarlo</h2>
+    <details open>
+      <summary>Windows (Word de escritorio)</summary>
+      <ol>
+        <li>Descarga el paquete y descomprímelo en cualquier carpeta.</li>
+        <li>Haz doble clic en <b>Instalar en Word.bat</b>. Si Windows muestra un aviso de seguridad, elige «Más información» → «Ejecutar de todas formas».</li>
+        <li>Cierra Word por completo y vuelve a abrirlo. En la pestaña <b>Inicio</b> aparece el botón <b>Sermon Check</b>.</li>
+      </ol>
+      <a class="btn" href="sermon-check-word.zip" download>Descargar para Windows</a>
+      <p class="small">El instalador solo registra el complemento para tu usuario; no necesita permisos de administrador. Para quitarlo, ejecuta <b>Quitar de Word.bat</b>.</p>
+    </details>
+    <details>
+      <summary>Mac (Word de escritorio)</summary>
+      <ol>
+        <li>Descarga <a href="manifest.xml" download>manifest.xml</a>.</li>
+        <li>En Finder, pulsa <b>Cmd + Mayús + G</b> y ve a <code>~/Library/Containers/com.microsoft.Word/Data/Documents/wef</code>. Si la carpeta <code>wef</code> no existe, créala dentro de <code>Documents</code>.</li>
+        <li>Copia <code>manifest.xml</code> en esa carpeta y reinicia Word.</li>
+        <li>En <b>Inicio</b> → <b>Complementos</b>, abre la lista de «Mis complementos» y elige <b>Sermon Check</b> en «Complementos de desarrollador».</li>
+      </ol>
+    </details>
+    <details>
+      <summary>Word en el navegador</summary>
+      <ol>
+        <li>Descarga <a href="manifest.xml" download>manifest.xml</a>.</li>
+        <li>Abre un documento en Word para la web y ve a <b>Inicio</b> → <b>Complementos</b> → <b>Más complementos</b>.</li>
+        <li>En «Mis complementos», elige <b>Cargar mi complemento</b> y selecciona el archivo.</li>
+      </ol>
+    </details>
+    <details>
+      <summary>Para toda una iglesia u organización con Microsoft 365</summary>
+      <p>Quien administre Microsoft 365 puede instalarlo a todos de una vez: en el Centro de administración, <b>Configuración</b> → <b>Aplicaciones integradas</b> → <b>Cargar aplicaciones personalizadas</b>, usando <a href="manifest.xml" download>manifest.xml</a>.</p>
+    </details>
+
+    <h2>Cómo prepara el documento</h2>
+    <ul>
+      <li><b>Títulos</b>: usa los estilos de título de Word (Título 1, 2, 3) para los puntos.</li>
+      <li><b>Citas</b>: los párrafos con sangría izquierda o estilo «Cita» se leen al ritmo de cita.</li>
+      <li><b>Etiquetas</b>: son párrafos normales; puedes moverlas, borrarlas o deshacer con Ctrl+Z.</li>
+    </ul>
+
+    <p class="small">Código abierto en <a href="https://github.com/lfsantana/sermon-check-word">GitHub</a>. Necesita conexión a internet para cargar el panel.</p>
+  </main>
+</body>
+</html>
